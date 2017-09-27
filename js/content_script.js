@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-	alert(window.location);
+	//alert(window.location);
 
 
 });

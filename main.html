@@ -45,6 +45,7 @@
 		align-items: center;
 		justify-content: space-around;
 		margin-top: 10px;
+		flex-wrap: nowrap;
 	}
 	
 	#settingsTab{
@@ -69,6 +70,31 @@
 	
 	.depricated{
 		display:none;
+	}
+	
+	#outputSpan{
+		display:flex;
+		white-space:normal;
+	}
+		
+	#outputSpan.positive{
+		color: #08c230;
+	}
+	
+	#outputSpan.negative{
+		color: #c20808;
+	}
+	
+	#outputSpan.neutral{
+		color: #de6003;
+	}
+	
+	#resetButton{
+		display:none;
+	}
+	
+	.required{
+		color: red;
 	}
 	
 	
@@ -122,27 +148,28 @@
 	     		<span id="outputSpan">&nbsp;</span>
 	     	</div>
 	     	<div id="submitDiv">
-	     		<span></span><input id="submitButton" type="button" value="Log Experience!" />
+	     		<span></span><input id="submitButton" type="button" value="Log Experience!" /><input id="resetButton" type="button" value="New Statement"/>
 	     	</div>
 	     	<div id="footerDiv"></div>
     	</div>
+    	
     	<div id="settingsTab">
     		<h1>Settings</h1>
     		<div id="nameDiv">
     			Your Name: <input id="name_input" type="text"/>
     		</div>
     		<div id="emailDiv">
-    			Your E-mail (as your LRS id): <input id="email_input" type="text"/>
+    			<span><i class="required"> * </i>Your E-mail (as your LRS id):</span> <input id="email_input" type="text"/>
     		</div>
     		<h3>LRS Settings</h3>
     		<div id="loginDiv">
-    			LRS Username: <input id="username_input" type="text"/>
+    			<span><i class="required"> * </i>LRS Username:</span> <input id="username_input" type="text"/>
     		</div>
     		<div id="passwordDiv">
-    			LRS Password: <input id="userpass_input" type="password"/>
+    			<span><i class="required"> * </i>LRS Password:</span> <input id="userpass_input" type="password"/>
     		</div>
     		<div id="endpointTitleDiv">
-    			LRS Endpoint:<span></span>
+    			<span><i class="required"> * </i>LRS Endpoint:</span><span></span>
     		</div>
     		<div id="endpointDiv">
     			<input id="endpoint_input" type="text"/>

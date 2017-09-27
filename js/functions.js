@@ -1,5 +1,5 @@
 var lrs;
-var statement;
+
 var queryInfo = {
 	    active: true,
 	    currentWindow: true
@@ -59,14 +59,19 @@ function saveData(){
 	
 	chrome.storage.sync.set(userData);
 	fillFromUserData();
+	
 	document.getElementById("settingsTab").style.display = "none";
-	document.getElementById("mainTab").style.display = "block";	
+	document.getElementById("mainTab").style.display = "block";
+	
+	outputMessage("Settings saved.", "positive", 2000);
+	
 }
 
 function prepareStatement(){
-	if(userData.lrs_username.trim() != "" && userData.lrs_endpoint.trim() != "")
+	if(userData.lrs_username.trim() != "" && userData.lrs_endpoint.trim() != "" && userData.email != "")
 	{
-		statement = new TinCan.Statement(
+		
+		var statement = new TinCan.Statement(
 					{
 				    "actor": {
 				        "mbox": "mailto:"+userData.email,
@@ -96,16 +101,19 @@ function prepareStatement(){
 				    }
 				}
 			);
+		
+		return statement;
 	}
 	else
 	{
-		alert("No username or endpoint");
+		outputMessage("Please fill all required fields in the 'Profile Settings' section.", "negative");
+		return null;
 	}
 }
 
-function sendStatement(){
+function sendStatement(statement){
 
-	
+	outputMessage("Sending statement...", "neutral");
 	try {
 	    lrs = new TinCan.LRS(
 	        {
@@ -117,8 +125,7 @@ function sendStatement(){
 	    );
 	}
 	catch (ex) {
-	    console.log("Failed to setup LRS object: ", ex);
-	    // TODO: do something with error, can't communicate with LRS
+	    outputMessage("Failed to setup LRS object: "+ ex, negative);
 	}
 	
 	lrs.saveStatement(
@@ -127,18 +134,17 @@ function sendStatement(){
 		        callback: function (err, xhr) {
 		            if (err !== null) {
 		                if (xhr !== null) {
-		                    alert("Failed to save statement: " + xhr.responseText + " (" + xhr.status + ")");
-		                    // TODO: do something with error, didn't save statement
+		                    outputMessage("Failed to save statement: " + xhr.responseText + " (" + xhr.status + ")", "negative");
 		                    return;
 		                }
 
-		                alert("Failed to save statement: " + err);
-		                // TODO: do something with error, didn't save statement
+		                outputMessage("Failed to save statement: " + err, "negative");
 		                return;
 		            }
 
-		            alert("Statement saved");
-		            // TOOO: do something with success (possibly ignore)
+		            outputMessage("Statement saved in your LRS!", "positive");
+		            document.getElementById("submitButton").style.display = "none";
+		            document.getElementById("resetButton").style.display = "block";
 		        }
 		    }
 		);	
@@ -149,11 +155,51 @@ function collectContentInfo(){
 	//alert(text);
 }
 
+function outputMessage(message, attitude, mseconds){
+	
+	if(attitude == "positive"){
+		document.getElementById("outputSpan").classList.remove("neutral");
+		document.getElementById("outputSpan").classList.remove("negative");
+		document.getElementById("outputSpan").classList.add("positive");
+	}
+	else
+	if(attitude == "negative"){
+		document.getElementById("outputSpan").classList.remove("neutral");
+		document.getElementById("outputSpan").classList.remove("positive");
+		document.getElementById("outputSpan").classList.add("negative");
+	}else
+	if(attitude == "neutral"){
+		document.getElementById("outputSpan").classList.remove("negative");
+		document.getElementById("outputSpan").classList.remove("positive");
+		document.getElementById("outputSpan").classList.add("neutral");
+	}
+	
+	
+	
+	document.getElementById("outputSpan").innerHTML = message;
+	
+	if(mseconds != null)
+		setTimeout(function(){ document.getElementById("outputSpan").innerHTML = "&nbsp;"; }, mseconds);
+}
+
+function resetForm(){
+	document.getElementById("verbDropdown").selectedIndex = 0;
+	document.getElementById("objectDropdown").selectedIndex = 0;
+	document.getElementById("outputSpan").innerHTML = "&nbsp;";
+	document.getElementById("resetButton").style.display = "none";
+	document.getElementById("submitButton").style.display = "block";
+	
+	document.getElementById("statementNameSpan").innerHTML = (userData.name.trim() != "" ? userData.name : "The user");
+	document.getElementById("statementVerbSpan").innerHTML = "(select verb)";
+	document.getElementById("statementObjectSpan").innerHTML = " this (select object)";
+}
+
 
 document.addEventListener('DOMContentLoaded', () => {
 	    var settingsButton = document.getElementById('actorSettingsButton');
 	    var settingsCancelButton = document.getElementById('settings_cancel_button');
 	    var settingsSaveButton = document.getElementById('settings_save_button');
+	    var resetButton = document.getElementById("resetButton");
 	    var submitButton = document.getElementById("submitButton");
 	    var objectDropdown = document.getElementById("objectDropdown");
 	    var verbDropdown = document.getElementById("verbDropdown");
@@ -175,8 +221,15 @@ document.addEventListener('DOMContentLoaded', () => {
 	    });
 	    
 	    submitButton.addEventListener('click', () => {
-	    	prepareStatement();
-	    	sendStatement();
+	    	
+	    	if(document.getElementById("verbDropdown").value != "" && document.getElementById("objectDropdown").value != ""){
+	    		var statement;
+	    		if(statement = prepareStatement())
+	    			sendStatement(statement);
+	    	}
+	    	else{
+	    		outputMessage("Please select a verb & an object for your statement.", "neutral", 3000);
+	    	}
 	    });
 	    
 	    verbDropdown.addEventListener('change', () => {
@@ -185,6 +238,10 @@ document.addEventListener('DOMContentLoaded', () => {
 	    
 	    objectDropdown.addEventListener('change', () => {
 	    	document.getElementById("statementObjectSpan").innerHTML = " this "+document.getElementById("objectDropdown").options[document.getElementById("objectDropdown").selectedIndex].text;
+	    });
+	    
+	    resetButton.addEventListener('click', () => {
+	    	resetForm();
 	    });
 	    
 	    collectContentInfo();
