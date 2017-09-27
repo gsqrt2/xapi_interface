@@ -1,0 +1,155 @@
+<!doctype html>
+
+<html>
+  <head>
+    <title>xAPI Record Logger</title>
+    <style type="text/css">
+      body {
+        margin: 10px;
+        white-space: nowrap;
+      }
+
+      h1 {
+        font-size: 15px;
+      }
+
+      #actorDiv, #verbDiv, #objectDiv, #footerDiv, #submitDiv, #loginDiv, #passwordDiv, #settingsButtonsDiv, #nameDiv, #endpointTitleDiv, #authDiv, #emailDiv, .customHeaderTitleDiv{
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+      }
+      
+      #endpointDiv, .customHeaderValueDiv {
+     	align-items: center;
+     	display: flex;
+        justify-content: space-between;
+        margin-top: 0px;
+     } 
+      
+	#objectDetailsDiv{
+		border: 1px solid #dbdbdb;
+		margin-top: 10px;
+	}
+	
+	#submitDiv{
+		margin-top: 10px;
+	}
+	
+	#settingsTab{
+		display:none;
+	}
+	
+	#username_input, #userpass_input, #name_input, #email_input, .custom_header_title_input, .custom_header_value_input{
+		margin-left:10px;
+		width: 200px;
+	}
+	
+	#endpoint_input{
+		width:100%;
+	}
+	
+	#addHeaderDiv{
+		align-items: left;
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+	}
+	
+	.depricated{
+		display:none;
+	}
+	
+	
+    </style>
+    
+	<script type="text/javascript" src="js/tincan-min.js"></script>
+    <script type="text/javascript" src="js/functions.js"></script>
+  
+  </head>
+
+	<body>
+		<div id="mainTab">
+			<h1>Log your Learning Experience</h1>
+			<h3>Actor:</h3>
+			<div id="actorDiv">
+	      		<span id="name_span">Your Name</span> <input id="actorSettingsButton" type="button" value="Profile Settings"/>
+	      	</div>
+	      	<h3>Statement:</h3>
+	      	<div id="verbDiv">
+		      	<span>Statement Verb: </span>
+		      	<select id="verbDropdown">
+		      		<option selected disabled hidden value=''></option>
+		        	<option value="http://activitystrea.ms/schema/1.0/experience">Experienced</option>
+		        	<option value="http://activitystrea.ms/schema/1.0/watch">Watched</option>
+		        	<option value="http://activitystrea.ms/schema/1.0/read">Read</option>
+		        	<option value="http://adlnet.gov/expapi/verbs/answered">Answered</option>
+		        	<option value="http://adlnet.gov/expapi/verbs/completed">Completed</option>
+		      	</select>
+	      	</div>
+	      	<div id="objectDiv">
+		      	Statement Object:
+		      	<select id="objectDropdown">
+		      		<option selected disabled hidden value=''></option>
+		      		<option value="http://activitystrea.ms/schema/1.0/video">Video</option>
+		        	<option value="http://activitystrea.ms/schema/1.0/article">Article</option>
+		        	<option value="http://id.tincanapi.com/activitytype/discussion">Discussion</option>
+		        	<option value="http://adlnet.gov/expapi/activities/course">Course</option>
+		        	<option value="http://id.tincanapi.com/activitytype/webinar">Webinar</option>
+		      	</select>
+	      	</div>
+	      	<div id="objectDetailsDiv">
+	      		Title<br>
+	      		Description<br>
+	      		Tags
+	      	</div>
+	      	<h3>Statement Preview:</h3>
+	     	<div id="fullStatementDiv">
+	     		"<span id="statementNameSpan"></span> <span id="statementVerbSpan">(select verb)</span><span id="statementObjectSpan"> this (select object)</span>"
+	     	</div>
+	     	<div id="submitDiv">
+	     		<span></span><input id="submitButton" type="button" value="Log Experience!" />
+	     	</div>
+	     	<div id="footerDiv"></div>
+    	</div>
+    	<div id="settingsTab">
+    		<h1>Settings</h1>
+    		<div id="nameDiv">
+    			Your Name: <input id="name_input" type="text"/>
+    		</div>
+    		<div id="emailDiv">
+    			Your E-mail (as your LRS id): <input id="email_input" type="text"/>
+    		</div>
+    		<h3>LRS Settings</h3>
+    		<div id="loginDiv">
+    			LRS Username: <input id="username_input" type="text"/>
+    		</div>
+    		<div id="passwordDiv">
+    			LRS Password: <input id="userpass_input" type="password"/>
+    		</div>
+    		<div id="endpointTitleDiv">
+    			LRS Endpoint:<span></span>
+    		</div>
+    		<div id="endpointDiv">
+    			<input id="endpoint_input" type="text"/>
+    		</div>
+    		<div id="authDiv">
+    			LRS Authentication Type: <select id="auth_select" disabled><option selected value="basic">Basic</option><option value="oauth">OAuth</option></select>
+    		</div>
+    		<h3 class="depricated">Custom Headers</h3>
+    		<div class="customHeaderTitleDiv depricated">
+    			Header: <input class="custom_header_title_input" type="text" value="X-Experience-API-Version" disabled/>
+    		</div>
+    		<div class="customHeaderValueDiv depricated">
+    			Value: <input class="custom_header_value_input" type="text" value="1.0.1" disabled/>
+    		</div>
+    		<div id="addHeaderDiv" class="depricated">
+    			<input type="button" value="Add Custom Header" class="depricated" disabled/>
+    		</div>
+    		<div id="settingsButtonsDiv">
+    			<input id="settings_cancel_button" type="button" value="Cancel"/>
+    			<input id="settings_save_button" type="button" value="Save"/>
+    		</div>
+    	</div>
+	</body>
+</html>
