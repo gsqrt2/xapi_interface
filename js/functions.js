@@ -37,8 +37,7 @@ function fillFromUserData(){
 	document.getElementById("endpoint_input").value = userData.lrs_endpoint;
 	
 	document.getElementById("statementNameSpan").innerHTML = (userData.name.trim() != "" ? userData.name : "The user");
-	//document.getElementById("statementVerbSpan").innerHTML = document.getElementById("verbDropdown").options[document.getElementById("verbDropdown").selectedIndex].text;
-	//document.getElementById("statementObjectSpan").innerHTML = " this "+document.getElementById("objectDropdown").options[document.getElementById("objectDropdown").selectedIndex].text;
+
 }
 
 
