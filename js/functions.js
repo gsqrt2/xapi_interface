@@ -1,23 +1,11 @@
 var lrs;
+var currentUrl = null;
 
 var queryInfo = {
 	    active: true,
 	    currentWindow: true
 	  };
-var userData = {
-				name:"",
-				email: "",
-				lrs_username: "",
-				lrs_password: "",
-				lrs_endpoint: ""
-				};
 
-
-
-
-chrome.storage.sync.get(userData, (stored_data) => {
-    initData(chrome.runtime.lastError ? null : stored_data);
-  });
 
 function initData(result){
 	if(result != null)
@@ -37,7 +25,36 @@ function fillFromUserData(){
 	document.getElementById("endpoint_input").value = userData.lrs_endpoint;
 	
 	document.getElementById("statementNameSpan").innerHTML = (userData.name.trim() != "" ? userData.name : "The user");
+	
+	chrome.tabs.query(queryInfo, (tabs) => {
+		var tab = tabs[0];
+		var url = tab.url;
+		if(typeof url == 'string'){
+			var urlRegex = /^(https?:\/\/)?(?:[^@\/\n]+@)?(www\.)?([^:\/\n]+)/;
+			var matches = urlRegex.exec(url);
+			currentUrl = matches[3];	
+		}
+		
+		presetStatementOptions();
+	});
 
+}
+
+function presetStatementOptions(){
+	if(userData.urls[currentUrl] != null){
+		document.getElementById("verbDropdown").value = userData.urls[currentUrl].verb;
+		document.getElementById("statementVerbSpan").innerHTML = document.getElementById("verbDropdown").options[document.getElementById("verbDropdown").selectedIndex].text;		
+		document.getElementById("objectDropdown").value = userData.urls[currentUrl].object;
+		document.getElementById("statementObjectSpan").innerHTML = " this "+document.getElementById("objectDropdown").options[document.getElementById("objectDropdown").selectedIndex].text;		
+	}
+	else{
+		document.getElementById("verbDropdown").selectedIndex = 0;
+		document.getElementById("objectDropdown").selectedIndex = 0;
+		document.getElementById("outputSpan").innerHTML = "&nbsp;";	
+		document.getElementById("statementNameSpan").innerHTML = (userData.name.trim() != "" ? userData.name : "The user");
+		document.getElementById("statementVerbSpan").innerHTML = "(select verb)";
+		document.getElementById("statementObjectSpan").innerHTML = " this (select object)";
+	}
 }
 
 
@@ -142,6 +159,20 @@ function sendStatement(statement){
 		            }
 
 		            outputMessage("Statement saved in your LRS!", "positive");
+		            
+		            if(currentUrl != null){
+		            	
+		            	var newKnownUrl = {"verb":document.getElementById("verbDropdown").value, "object":document.getElementById("objectDropdown").value};
+		            	if(userData.urls == null){
+		            		var urls = {};
+		            		userData.usrls = urls;
+		            	}
+		            		
+		            	userData.urls[currentUrl] = newKnownUrl;
+		            	chrome.storage.sync.set(userData);
+		            }
+		            	
+		            
 		            document.getElementById("submitButton").style.display = "none";
 		            document.getElementById("resetButton").style.display = "block";
 		        }
@@ -151,7 +182,13 @@ function sendStatement(statement){
 
 function collectContentInfo(){
 	
-	//alert(text);
+	chrome.runtime.onMessage.addListener(
+		function(result, sender, sendResponse) {
+  		  
+  			 // alert(sender.id+" - "+result.value);
+  		  
+	});
+	chrome.tabs.executeScript(null, {file: "js/content_script.js", runAt: "document_end"});
 }
 
 function outputMessage(message, attitude, mseconds){
@@ -166,7 +203,8 @@ function outputMessage(message, attitude, mseconds){
 		document.getElementById("outputSpan").classList.remove("neutral");
 		document.getElementById("outputSpan").classList.remove("positive");
 		document.getElementById("outputSpan").classList.add("negative");
-	}else
+	}
+	else
 	if(attitude == "neutral"){
 		document.getElementById("outputSpan").classList.remove("negative");
 		document.getElementById("outputSpan").classList.remove("positive");
@@ -182,15 +220,10 @@ function outputMessage(message, attitude, mseconds){
 }
 
 function resetForm(){
-	document.getElementById("verbDropdown").selectedIndex = 0;
-	document.getElementById("objectDropdown").selectedIndex = 0;
 	document.getElementById("outputSpan").innerHTML = "&nbsp;";
 	document.getElementById("resetButton").style.display = "none";
 	document.getElementById("submitButton").style.display = "block";
-	
-	document.getElementById("statementNameSpan").innerHTML = (userData.name.trim() != "" ? userData.name : "The user");
-	document.getElementById("statementVerbSpan").innerHTML = "(select verb)";
-	document.getElementById("statementObjectSpan").innerHTML = " this (select object)";
+	presetStatementOptions();
 }
 
 
@@ -202,7 +235,10 @@ document.addEventListener('DOMContentLoaded', () => {
 	    var submitButton = document.getElementById("submitButton");
 	    var objectDropdown = document.getElementById("objectDropdown");
 	    var verbDropdown = document.getElementById("verbDropdown");
-
+	    
+	    chrome.storage.sync.get(userData, (stored_data) => {
+	        initData(chrome.runtime.lastError ? null : stored_data);
+	      });
 	   
 	    
 	    settingsButton.addEventListener('click', () => {
@@ -243,7 +279,9 @@ document.addEventListener('DOMContentLoaded', () => {
 	    	resetForm();
 	    });
 	    
+	    
+
+	    
 	    collectContentInfo();
-	    
-	    
+	     
 	});

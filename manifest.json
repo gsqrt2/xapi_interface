@@ -5,19 +5,12 @@
   "permissions": [
     "activeTab",
     "storage",
-    "<all_urls>"
+   	"<all_urls>"
   ],
   "browser_action": {
     "default_title": "Log your learning experience!",
     "default_popup": "main.html",
     "default_icon":"img/mobian_icon.png"
   },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["js/content_script.js"],
-      "run_at": "document_start"
-    }
-  ],
   "manifest_version": 2
 }
